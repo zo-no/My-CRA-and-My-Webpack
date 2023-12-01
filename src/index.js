@@ -1,1 +1,25 @@
-console.log(12312312);
+import axios from "axios";
+const request = axios.create({
+  baseURL: "http://localhost:8000", //根域名
+  timeout: 5000,
+});
+
+const requestData = {
+  grant_type: "",
+  username: 123,
+  password: 123,
+  scope: "",
+  client_id: "",
+  client_secret: "",
+};
+request({
+  url: "/v1/userinit/login/account",
+  method: "POST",
+  data: requestData,
+  headers: {
+    accept: "application/json",
+    "Content-Type": "application/x-www-form-urlencoded",
+  },
+}).then((res) => {
+  console.log(res);
+});
