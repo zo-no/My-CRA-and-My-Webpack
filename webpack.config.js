@@ -2,20 +2,16 @@
 @Date		:2023/12/01 23:42:07
 @Author		:zono
 @Description:
-1.js处理()
+1.图片处理
+$ yarn add file-loader url-loader -D
+图片大了，就用file-loader，小了就用url-loader，大了就不会转成base64，小了就会转成base64
+file-loader：把图片拷贝到dist目录下
+url-loader：把图片转换成base64格式，减少http请求，但是如果图片过大，会导致js文件过大，反而会增加http请求
 
-ES6语法兼容：（把ES6转换为ES5）
-$ yarn add babel-loader @babel/core @babel/preset-env @babel/polyfill -D
-
-ES+内置API兼容：（把ES+内置API转换为ES5）
-$ yarn add @babel/polyfill（生产环境也要使用）
-直接再文件中导入就可以使用了import "@babel/polyfill";
-这个文件不是把全部es6转换为es5，比如fetch等
-
-2.压缩js、css
-webpack5内置了压缩js的功能，但css是基于js的，所以还是需要安装js压缩插件
-$ yarn add css-minimizer-webpack-plugin terser-webpack-plugin -D
-
+路径问题：
+1.在js中引入图片，要先基于ES6的模块化导入，这样webpack才能识别
+2。要使用绝对地址，否则会找不到文件，解决办法如下：
+2.1.在webpack.config.js中配置resolve
 */
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -25,6 +21,12 @@ const CssMinimizerWebpackPlugin = require("css-minimizer-webpack-plugin"); //压
 const TerserPlugin = require("terser-webpack-plugin"); //压缩js
 
 module.exports = {
+  resolve: {
+    // 设置解析器：配置别名
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   mode: "production",
   entry: {
     index: "./src/index.js",
@@ -111,6 +113,26 @@ module.exports = {
         include: path.resolve(__dirname, "src"), //只编译src目录下的文件
         exclude: /node_modules/, //排除node_modules目录下的文件
       },
+      {
+        test: /\.(png|jpg|gif|jpeg)$/,
+        type: "javascript/auto", //webpack5要求,webpack5默认使用ES6模块化解析，而html-withimg-loader使用的是commonjs规范，所以会报错
+        use: [
+          {
+            loader: "url-loader",
+            options: {
+              esModule: false, //关闭ES6模块化
+              limit: 200 * 1024, //如果图片大于200kb，就以路径的方式引入，否则就以base64的方式引入
+              outputPath: "images", //图片打包后存放的目录
+              name: "[name].[hash:8].[ext]", //编译后没有被BASE64的图片打包后的名称
+            },
+          },
+        ],
+      },
     ],
+  },
+  // 设置打包的最大资源大小
+  performance: {
+    maxAssetSize: 100 * 1024 * 1024, //100M
+    maxEntrypointSize: 100 * 1024 * 1024, //100M
   },
 };
