@@ -1,4 +1,7 @@
+import "@babel/polyfill";
 import axios from "axios";
+import "./index.less";
+
 const request = axios.create({
   baseURL: "http://localhost:8000", //根域名
   timeout: 5000,
