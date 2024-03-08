@@ -1,9 +1,9 @@
 # 文件描述
 > 该文件是webpack学习库的说明文件
 >
-> 笔记：学习webpack的笔记
-> learn-webpack：学习时的代码
-> my-cra：准备写一个自己的cra，但还未开始
+> - 笔记：学习webpack的笔记
+> - learn-webpack：学习时的代码
+> - my-cra：准备写一个自己的cra，但还未开始
 # Webpack学习库
 
 ## 学习计划
